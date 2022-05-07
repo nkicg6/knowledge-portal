@@ -47,6 +47,21 @@ function searchConcept(){
         .then((res) => {return res.json()})
         .then((resjson) => {updateSearchConceptDiv(resjson)});
 }
+function parseCitations(response){
+    let countsPerYear = response.counts_by_year
+    let worksx = [];
+    let worksy = [];
+    for (let i = 0; i < countsPerYear.length; i++){
+        worksx.push(countsPerYear[i].year);
+        worksy.push(countsPerYear[i].works_count);
+    }
+    return {"x":worksx.reverse(), "y":worksy.reverse()};
+}
+
+function plotData(datapoints){
+    console.log("plotting");
+    Plotly.newPlot(document.getElementById("plotlyCitations"), [datapoints]);
+}
 
 function updateSearchConceptDiv(response){
     searchConceptDiv.innerHTML = "";
@@ -57,8 +72,9 @@ function updateSearchConceptDiv(response){
     description.innerHTML = response.description;
     let plot = document.createElement("div");
     plot.id = "plotlyCitations";
-    plot.innerHTML = "test";
+    citationsplot = parseCitations(response);
     searchConceptDiv.append(heading, description, plot);
+    plotData(citationsplot);
 }
 
 
