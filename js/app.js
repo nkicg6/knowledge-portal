@@ -1,5 +1,6 @@
 // code to handle queries
 function openAlexSearch(term){
+    // search concepts via openalex
     let api_call = "http://api.openalex.org/autocomplete/concepts?q="+term;
     jsonres = fetch(api_call,{method: 'GET'})
         .then(function(response){return response.json();});
@@ -7,38 +8,41 @@ function openAlexSearch(term){
 }
 
 
-function parseResponse(arr){
-    if (!arr){
-        updateInfoDiv("<p>No results</p>");
-    }
-    console.log(arr.length);
-    let html_res = '<ul id="searchResults">';
-    for (let i = 0; i < arr.length; i++){
-        html_res += '<ul class="singleItem">';
-        let id = arr[i].id;
-        let name = arr[i].display_name;
-        html_res += '<li><a href="' + id + '">' + name + '</a></li></ul>';
-    }
-    html_res += "</ul>";
-    console.log(html_res);
-    updateInfoDiv(html_res);
-}
-
 function updateInfoDiv(data){
     console.log("Updating div");
-    let rightdiv = document.getElementById("right");
-    //console.log(rightdiv);
-    rightdiv.innerHTML = data;
-    console.log(rightdiv);
-    
+    let chooser = document.getElementById("chooser");
+    if (!data){
+        console.log("No data, clearing");
+        // remove all items
+        chooser.innerHTML="";
+        chooser.style.visibility = "hidden";
+        return;
+    }
+    chooser.style.visibility= "visible";
+    // remove all items
+    chooser.innerHTML="";
+    for (let i = 0; i < data.length; i++){
+        current = document.createElement("option");
+        fmtId = data[i].id.replace("https://", "https://api.");
+        current.value = fmtId;
+        current.text = data[i].display_name;
+        chooser.appendChild(current);
+    }
+    chooser.selectedIndex = 0;
+    // call other functions here
+    // attach listener to the new selection
+    // make selection
+    return;
 }
 
 
+
+// setup action listeners
 const searchQuery = document.querySelector("#itemsearch");
 searchQuery.addEventListener("keyup", function (evt) {
     var searchres = openAlexSearch(searchQuery.value)
         //.then((message) => {message.map(parseResponse)});
     //searches.map(parseResponse);
-        .then((message)=> {parseResponse(message.results)});    
+        .then((message)=> {updateInfoDiv(message.results)});    
 });
 

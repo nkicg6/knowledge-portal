@@ -9,14 +9,15 @@
   <body>
     <h1> OpenAlex API Explorer</h1>
     <div>
-      <div class="left">
+      <div id="searchDiv">
         <form>
           <label for="itemsearch">Enter search terms</label><br>
           <input type="text" id="itemsearch">
         </form>
       </div>
-      <div id="right">
-        
+      <div id="chooserDiv">
+        <select id="chooser" size="10" style="visibility:hidden">
+        </select>
       </div>
     </div>
     <script src="js/app.js"></script>
