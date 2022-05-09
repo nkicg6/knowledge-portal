@@ -80,7 +80,7 @@ function parseCitations(response){
 
 function plotData(datapoints){
     console.log("plotting");
-    Plotly.newPlot(document.getElementById("plotlyCitations"), [datapoints]);
+    Plotly.newPlot(document.getElementById("plotlyCitations"), [datapoints],{margin: { t: 0 }});
 }
 
 function updateRelatedConceptsDiv(response){
@@ -128,7 +128,7 @@ function formatPublicationRow(workItem){
     // Citations
     citations = document.createElement("td");
     citations.innerHTML = workItem.cited_by_count;
-    rowBase.append(titleCol, yearPublished, citations);
+    rowBase.append(titleCol, citations, yearPublished);
     return rowBase;
 }
 
@@ -136,14 +136,17 @@ async function updateTopPublications(){
     console.log("Updating top publications div");
     let topWorksResponse = await searchTopWorks();
     let topWorksResults = topWorksResponse.results;
+    let papersHeading = document.createElement("h2");
+    papersHeading.id = "papersHeading";
+    papersHeading.innerHTML = "Top cited publications";
     let publicationsTable = document.createElement("table");
-    publicationsTable.innerHTML = "<tr><th>Title</th><th>Year Published</th><th>Citations</th></tr>"
+    publicationsTable.innerHTML = "<tr><th>Title</th><th>Citations</th><th>Published</th></tr>"
     publicationsTable.id = "publicationsTable";
     for (i= 0; i < topWorksResults.length; i++){
         row  = formatPublicationRow(topWorksResults[i]);
         publicationsTable.appendChild(row);
     }
-    topPublicationsDiv.append(publicationsTable);
+    topPublicationsDiv.append(papersHeading,publicationsTable);
     topPublicationsDiv.style.visibility ="visible";
 }
 
@@ -152,7 +155,7 @@ function updateSearchConceptDiv(response){
     searchConceptDiv.innerHTML = "";
     searchConceptDiv.style.visibility = "visible";
     let heading = document.createElement("h2");
-    heading.innerHTML = response.display_name;
+    heading.innerHTML = "Citations over time for " + response.display_name;
     let description = document.createElement("p");
     description.innerHTML = response.description;
     let plot = document.createElement("div");

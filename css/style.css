@@ -1,6 +1,60 @@
 
 html{
-  background-color: #f1f1f1;
   margin: 0.5em;
   font-family: "Sans-Serif";
+}
+
+body{
+  display: grid;
+  grid-template-columns: [leftcol] 50% [rightcol] 50%;
+  grid-template-rows: [title] 10% [inforow] 45% [plotrow] 45%;
+}
+
+#mainTitle{
+  grid-column: leftcol;
+  grid-row: title;
+}
+
+
+#searchDiv{
+  grid-column: leftcol;
+  grid-row: inforow;
+}
+
+#relatedConceptDiv{
+  grid-column: rightcol;
+  grid-row: inforow;
+  width: 50%;
+}
+
+#topPublicationsDiv{
+  grid-column: leftcol;
+  grid-row: plotrow;
+}
+
+#searchConceptDiv{ /* plot */
+  grid-column: rightcol;
+  grid-row: plotrow;
+}
+
+table {
+  width: 80%;
+  border: 1px solid #dddddd;
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+#relatedConceptList{
+  border: 1px solid black;
+  border-radius: 4px;
+  width: 70%;
 }
