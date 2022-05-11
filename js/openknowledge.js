@@ -155,7 +155,10 @@ function plotlyPlotData(datapoints){
     let plot = document.createElement("div");
     plot.id = "plotlyCitations"
     plotDiv.appendChild(plot);
-    Plotly.newPlot(plot, [datapoints],{margin: { t: 0 }});
+    let layout = {xaxis: {title: "Year"},
+                  yaxis: {title: "Citations"},
+                  margin: { t: 0 }};
+    Plotly.newPlot(plot, [datapoints], layout);
 }
 
 function updatePlotDiv(topWorksResponse){
