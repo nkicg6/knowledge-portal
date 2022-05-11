@@ -1,13 +1,29 @@
+:root {
+  --code-background: #F1F1F1;
+  --main-font-size: 16px;
+  --caption-text: 0.9rem;
+  --main-font-family: "Avenir";
+  --h1-font-size: 1.5rem;
+  --h2-font-size: 1.25rem;
+  --max-reading-width: 650px;
+  --min-size-width: 350px;
+  --light-blue: #D6EEEE;
+  --grey: #D3D3D3;
+}
 
 html{
   margin: 0.5em;
-  font-family: "Sans-Serif";
+  font-family: var(--main-font-family);
+  line-height: 1.35;
+  font-size: var(--main-font-size);
 }
 
 body{
   display: grid;
-  grid-template-columns: [leftcol] 50% [rightcol] 50%;
-  grid-template-rows: [title] 10% [inforow] 45% [plotrow] 45%;
+  grid-template-columns: [leftcol] 350px [middlecol] 33% [rightcol] 33%;
+  grid-template-rows: [title] 80px [inforow] 300px [bottom] auto;
+  gap: 10px;
+  margin-top: 1.5em;
 }
 
 #mainTitle{
@@ -21,40 +37,71 @@ body{
   grid-row: inforow;
 }
 
+input{
+  border: 4px solid var(--light-blue);
+  width: 80%;
+  max-width: 300px;
+}
+
+
+#chooserDiv{
+  width: 80%;
+  max-width:300px;
+}
+
+select{
+  width: 80%;
+  max-width:300px;
+}
+
+option:checked{
+  background-color: var(--light-blue);
+}
+
+form{
+  width: 80%;
+  max-width:300px;
+}
+
 #relatedConceptDiv{
-  grid-column: rightcol;
+  grid-column: middlecol;
   grid-row: inforow;
-  width: 50%;
+  width: 90%;
 }
 
 #topPublicationsDiv{
-  grid-column: leftcol;
-  grid-row: plotrow;
+  grid-column: leftcol / span 2;
+  grid-row: bottom;
 }
 
-#searchConceptDiv{ /* plot */
+#plotDiv{ /* plot */
   grid-column: rightcol;
-  grid-row: plotrow;
+  grid-row: inforow;
 }
+
 
 table {
-  width: 80%;
-  border: 1px solid #dddddd;
-  border-collapse: collapse;
+  width: 90%;
+  border-spacing: 0px;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
 }
 
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
 
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-
-#relatedConceptList{
+th{
   border: 1px solid black;
-  border-radius: 4px;
-  width: 70%;
+  color: black;
+  background: #c0c0c0;
+  padding:0.5rem;
 }
+
+tr,td{
+  border: 1px solid black;
+  border-spacing: 4px;
+  padding: 0.3em;
+}
+tr:nth-child(even) {
+  background-color:var(--grey);
+}
+
+

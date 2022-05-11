@@ -1,12 +1,17 @@
 // code to handle queries
 const topPublicationsDiv = document.getElementById("topPublicationsDiv");
 const realtedConceptDiv = document.getElementById("relatedConceptDiv");
+//const realtedConceptSelect = document.getElementById("relatedConceptSelect");
 const searchQuery = document.getElementById("itemsearch");
-const searchConceptDiv = document.getElementById("searchConceptDiv");
+const plotDiv = document.getElementById("plotDiv");
 const chooser = document.getElementById("chooser");
 const polite = "&mailto=nicholas.george32@gmail.com";
 
-const divList = [topPublicationsDiv, relatedConceptDiv, chooser, searchConceptDiv];
+const divList = [topPublicationsDiv,
+                 relatedConceptDiv,
+                 //relatedConceptSelect,
+                 chooser,
+                 plotDiv];
 
 // API calls to api.OpenAlex.org
 function openAlexSearch(term){
@@ -43,10 +48,6 @@ function updateInfoDiv(data){
             divList[i].innerHTML = "";
             divList[i].style.visibility = "hidden";
         }
-        // chooser.innerHTML="";
-        // chooser.style.visibility = "hidden";
-        // searchConceptDiv.innerHTML = "";
-        // searchConceptDiv.style.visibility = "hidden";
         return;
     }
     // remove all items before drawing again
@@ -60,7 +61,7 @@ function updateInfoDiv(data){
         chooser.appendChild(current);
     }
     chooser.style.visibility= "visible";
-    searchConceptDiv.style.visibility = "visible"
+    plotDiv.style.visibility = "visible"
     chooser.selectedIndex = 0;
     searchConcept();
     return;
@@ -68,17 +69,18 @@ function updateInfoDiv(data){
 
 
 function parseCitations(response){
-    let countsPerYear = response.counts_by_year
+    console.log(response);
+    let countsPerYear = response.counts_by_year;
     let worksx = [];
     let worksy = [];
-    for (let i = 0; i < countsPerYear.length; i++){
+    for (let i = 1; i < countsPerYear.length; i++){ // skip most recent year
         worksx.push(countsPerYear[i].year);
         worksy.push(countsPerYear[i].works_count);
     }
     return {"x":worksx.reverse(), "y":worksy.reverse()};
 }
 
-function plotData(datapoints){
+function plotlyPlotData(datapoints){
     console.log("plotting");
     Plotly.newPlot(document.getElementById("plotlyCitations"), [datapoints],{margin: { t: 0 }});
 }
@@ -86,29 +88,35 @@ function plotData(datapoints){
 function updateRelatedConceptsDiv(response){
     console.log("Updating related concepts div");
     relatedConceptDiv.innerHTML="";
+    //relatedConceptSelect.innerHTML="";
     let conceptHeading = document.createElement("h2");
-    conceptHeading.innerHTML = "Concepts related to '" + response.display_name + "'";
+    conceptHeading.innerHTML = "Concepts related to:<br />'<em>" + response.display_name + "</em>'";
     let conceptExplain = document.createElement("p");
     conceptExplain.innerHTML = "Click a concept to search (not yet implemented...)";
-    let conceptList = document.createElement("ul");
-    conceptList.size = 10;
+    let conceptList = document.createElement("select");
+    conceptList.size = "5";
     conceptList.id = "relatedConceptList";
-    conceptList.style.height = "150px";
-    conceptList.style.overflow = "scroll";
+//    conceptList.style.overflow = "scroll";
     let related = response.related_concepts;
     for (let i = 0; i < related.length; i++){
-        conceptItem = document.createElement("li");
+        conceptItem = document.createElement("option");
         conceptItem.value = related[i].id;
-        conceptLink = document.createElement("a");
-        conceptLink.target = "_blank";
-        conceptLink.rel="noopener";
-        conceptLink.href = related[i].id;
-        conceptLink.innerHTML = related[i].display_name + " (" + Math.round(related[i].score) + "%)";
-        conceptItem.appendChild(conceptLink);
+        conceptItem.innerHTML = related[i].display_name + " (" + Math.round(related[i].score) + "%)";
         conceptList.appendChild(conceptItem);        
     }
     relatedConceptDiv.append(conceptHeading, conceptExplain, conceptList);
     relatedConceptDiv.style.visibility = "visible";
+}
+
+function findPublicationLink(workItem){
+    // return the url to the work, preferring pmid, then doi, then openalex
+    if (workItem.ids.pmid){
+        return workItem.ids.pmid;
+    }
+    if (workItem.ids.doi){
+        return workItem.ids.doi;
+    }
+    return workItem.ids.openalex;
 }
 
 function formatPublicationRow(workItem){
@@ -117,7 +125,7 @@ function formatPublicationRow(workItem){
     // publication title and link
     titleCol = document.createElement("td");
     publicationLink = document.createElement("a");
-    publicationLink.href = workItem.ids.doi;
+    publicationLink.href = findPublicationLink(workItem);
     publicationLink.target = "_blank";
     publicationLink.rel = "noopener";
     publicationLink.innerHTML = workItem.display_name;
@@ -151,18 +159,16 @@ async function updateTopPublications(){
 }
 
 
-function updateSearchConceptDiv(response){
-    searchConceptDiv.innerHTML = "";
-    searchConceptDiv.style.visibility = "visible";
-    let heading = document.createElement("h2");
-    heading.innerHTML = "Citations over time for " + response.display_name;
+function updateAll(response){
+    plotDiv.innerHTML = "";
+    plotDiv.style.visibility = "visible";
     let description = document.createElement("p");
     description.innerHTML = response.description;
     let plot = document.createElement("div");
     plot.id = "plotlyCitations";
     citationsplot = parseCitations(response);
-    searchConceptDiv.append(heading, description, plot);
-    plotData(citationsplot);
+    plotlyPlotData(citationsplot);
+    plotDiv.append(plot);
     updateRelatedConceptsDiv(response);
     updateTopPublications();
 }
@@ -174,8 +180,9 @@ searchQuery.value = "";
 
 searchQuery.addEventListener("keyup", function (evt) {
     openAlexSearch(searchQuery.value)
-        .then((message)=> {updateInfoDiv(message.results)});    
+        .then((message)=> {updateAll(message.results)});    
 });
+
 
 chooser.addEventListener("change", function(evt){
     searchConcept()
