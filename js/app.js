@@ -5,7 +5,8 @@ const realtedConceptDiv = document.getElementById("relatedConceptDiv");
 const searchQuery = document.getElementById("itemsearch");
 const plotDiv = document.getElementById("plotDiv");
 const chooser = document.getElementById("chooser");
-const polite = "&mailto=nicholas.george32@gmail.com";
+//Please add your email
+const polite = "";
 
 const divList = [topPublicationsDiv,
                  relatedConceptDiv,
